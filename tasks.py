@@ -41,15 +41,13 @@ print(tokens)
 #   punctuation, and then converts each token to lowercase. The function should returns unique 
 #   words in alphabetical order.
 
-# Your code here:
 def tokenize(string: str) -> list:
-    # Convert string to lowercase and replace unwanted characters with spaces
-    clean_string = "".join(char if char.isalnum() or char.isspace() else " " for char in string.lower())
-    # Split the cleaned string into words
+    # Clean the string: lowercase and keep only valid characters
+    clean_string = "".join(char if char in "\n\t abcdefghijklmnopqrstuvwxyz0123456789" else " " for char in string.lower())
+    # Split into tokens
     tokens = clean_string.split()
     # Return sorted unique tokens
-    return sorted(set(tokens))
-
+    return sorted(tokens)
 
 # [B] Dictionary Comprehensions: Frequency Count of Tokens
 #     Objective: Practice dictionary comprehensions for token frequency counts.
@@ -92,12 +90,13 @@ print(word_frequencies_filtered)  # Expected output: {'the': 2}
 #   the token frequencies of only those tokens that occur more than k times in the string.
 
 # Your code here:
-def token_counts(string: str, k: int = 1) -> dict:
-    # Split the string into lowercase tokens and remove punctuation
-    tokens = ["".join(char for char in word if char.isalnum()) for word in string.lower().split()]
-    # Count frequencies and filter tokens with frequency > k
-    return {word: tokens.count(word) for word in set(tokens) if tokens.count(word) > k}
 
+def token_counts(string: str, k: int = 1) -> dict:
+    # Tokenize and count frequencies
+    tokens = tokenize(string)
+    freq = {word: tokens.count(word) for word in set(tokens)}
+    # Filter by frequency > k
+    return {word: count for word, count in freq.items() if count > k}
 
 
 # [C] Sets & Dictionary comprehension: Mapping unique tokens to numbers and vice versa
@@ -163,15 +162,16 @@ print(id_to_token)
 # Your code here:
 # -----------------------------------------------
 def make_vocabulary_map(documents: list) -> tuple:
-    # Hint: use your tokenize function
-    pass # Your code
-
-# Test
-t2i, i2t = make_vocabulary_map([text])
-all(i2t[t2i[tok]] == tok for tok in t2i) # should be True
-# -----------------------------------------------
-
-
+    # Collect all unique tokens from all documents
+    tokens = set()
+    for doc in documents:
+        tokens.update(tokenize(doc))
+    # Sort tokens for consistency
+    sorted_tokens = sorted(tokens)
+    # Create mappings
+    token2int = {token: idx for idx, token in enumerate(sorted_tokens)}
+    int2token = {idx: token for token, idx in token2int.items()}
+    return token2int, int2token
 
 # Task 8: Define a function that will take in a list of strings ('documents') and a vocabulary
 #   dictionary token_to_id, that tokenizes each string in the list and returns a list with
@@ -181,20 +181,19 @@ all(i2t[t2i[tok]] == tok for tok in t2i) # should be True
 #   and the id_to_token dictionaries.
 
 # Your code here:
-def make_vocabulary_map(documents: list) -> tuple:
-    # Step 1: Tokenize all documents and collect unique tokens
-    tokens = set()
-    for doc in documents:
-        # Use the tokenize function to process each document
-        tokens.update(["".join(char for char in word if char.isalnum()) for word in doc.lower().split()])
+def tokenize_and_encode(documents: list, token_to_id=None) -> tuple:
+    # Create vocabulary if not provided
+    if token_to_id is None:
+        token_to_id, id_to_token = make_vocabulary_map(documents)
+    else:
+        id_to_token = {idx: token for token, idx in token_to_id.items()}
     
-    # Step 2: Create token-to-int and int-to-token dictionaries
-    sorted_tokens = sorted(tokens)  # Sort for consistent ordering
-    token2int = {token: idx for idx, token in enumerate(sorted_tokens)}
-    int2token = {idx: token for token, idx in token2int.items()}
-    
-    return token2int, int2token
-
+# Encode documents
+    encoded_documents = [
+        [token_to_id[token] for token in tokenize(doc) if token in token_to_id]
+        for doc in documents
+    ]
+    return encoded_documents, token_to_id, id_to_token
 # Test:
 enc, t2i, i2t = tokenize_and_encode([text, 'What a luck we had today!'])
 " | ".join([" ".join(i2t[i] for i in e) for e in enc]) == 'the quick brown fox jumps over the lazy dog | what a luck we had today'
