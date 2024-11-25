@@ -90,16 +90,20 @@ print(word_frequencies_filtered)  # Expected output: {'the': 2}
 #   the token frequencies of only those tokens that occur more than k times in the string.
 
 # Your code here:
-
 def token_counts(string: str, k: int = 1) -> dict:
-    # Tokenize the string into words
-    tokens = tokenize(string)
-    # Find unique tokens and their counts using numpy
+    # Normalize: Convert to lowercase and replace non-alphanumerics with spaces
+    clean_string = "".join(char if char.isalnum() or char.isspace() else " " for char in string.lower())
+    # Tokenize: Split on whitespace
+    tokens = clean_string.split()
+    # Count unique tokens and their occurrences
     unique_tokens, counts = np.unique(tokens, return_counts=True)
-    # Create a dictionary of tokens and their counts
-    freq = dict(zip(unique_tokens, counts))
-    # Filter tokens with counts greater than k
-    return {word: count for word, count in freq.items() if count > k}
+    # Convert to Python native types and create a dictionary
+    freq = {str(token): int(count) for token, count in zip(unique_tokens, counts)}
+    # Return all tokens for k=1, otherwise filter by counts >= k
+    if k == 1:
+        return freq
+    return {token: count for token, count in freq.items() if count >= k}
+  
     
 # [C] Sets & Dictionary comprehension: Mapping unique tokens to numbers and vice versa
 #   Objective: Practice dictionary comprehensions and create mappings from tokens to unique 
