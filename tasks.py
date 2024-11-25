@@ -327,9 +327,12 @@ o.shape == (100,) and o.mean().round(3) == 16.287 and o.std().astype(int) == 133
 
 # Your code here:
 # -----------------------------------------------
-def rnn_loss(w: np.array, w, list_of_sequences: list[np.array], y: np.array) -> np.float64:
-    pass # Your code
-
+def rnn_loss(w: np.array, list_of_sequences: list[np.array], y: np.array) -> np.float64:
+    # Compute the predicted outputs using the RNN layer
+    pred = rnn_layer(w, list_of_sequences)
+    # Compute the least squares loss
+    return np.sum((y - pred) ** 2)
+    
 # Test:
 y = np.array([(X @ np.arange(1,4))[0] for X in list_of_sequences])
 o = rnn_loss(wstart, list_of_sequences, y)
