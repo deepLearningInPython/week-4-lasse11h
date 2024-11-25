@@ -72,30 +72,31 @@ def tokenize(string: str) -> list:
 # dictionary comprehension
 
 # Your code here:
-# -----------------------------------------------
-word_frequencies = _ # Your code here
+# List of tokens from the previous exercise
+tokens = ["the", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"]
 
-# Expected output example: {'the': 2, 'quick': 1, ...}
-print(word_frequencies)
+# Task 3: Create a dictionary comprehension to count the frequency of each word
+word_frequencies = {word: tokens.count(word) for word in tokens}
 
-# Modify the comprehension to include only words that appear more than once.
-# -----------------------------------------------
+# Print the word frequencies
+print(word_frequencies)  # Expected output: {'the': 2, 'quick': 1, 'brown': 1, 'fox': 1, 'jumps': 1, 'over': 1, 'lazy': 1, 'dog': 1}
 
+# Modify to include only words that appear more than once
+word_frequencies_filtered = {word: count for word, count in word_frequencies.items() if count > 1}
+
+# Print the filtered word frequencies
+print(word_frequencies_filtered)  # Expected output: {'the': 2}
 
 
 # Task 4: Define a function that takes a string and an integer k, and returns a dictionary with
 #   the token frequencies of only those tokens that occur more than k times in the string.
 
 # Your code here:
-# -----------------------------------------------
 def token_counts(string: str, k: int = 1) -> dict:
-    pass # Your code
-
-# test:
-text_hist = {'the': 2, 'quick': 1, 'brown': 1, 'fox': 1, 'jumps': 1, 'over': 1, 'lazy': 1, 'dog': 1}
-all(text_hist[key] == value for key, value in token_counts(text).items())
-# -----------------------------------------------
-
+    # Split the string into lowercase tokens and remove punctuation
+    tokens = ["".join(char for char in word if char.isalnum()) for word in string.lower().split()]
+    # Count frequencies and filter tokens with frequency > k
+    return {word: tokens.count(word) for word in set(tokens) if tokens.count(word) > k}
 
 
 
@@ -118,21 +119,28 @@ all(text_hist[key] == value for key, value in token_counts(text).items())
 #   `token_to_id`: a dictionary that maps each token to a unique integer ID.
 #   `id_to_token`: a dictionary that maps each unique integer ID back to the original token.
 
-# Your code here:
-# -----------------------------------------------
-token_to_id = _ # Your code here
+# List of tokens from Exercise 1
+tokens = ["the", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"]
+
+# Get the unique tokens and sort them for consistent ordering
+unique_tokens = sorted(set(tokens))
+
+# Create mappings
+token_to_id = {token: idx for idx, token in enumerate(unique_tokens)}
+id_to_token = {idx: token for token, idx in token_to_id.items()}
+
+# Print the mappings
+print("Token to ID:", token_to_id)
+print("ID to Token:", id_to_token)
 
 # Expected output: {'dog': 0, 'quick': 1, 'fox': 2, 'the': 3, 'over': 4, 'lazy': 5, 'brown': 6, 'jumps': 7}
-print(token_to_id)
-# -----------------------------------------------
-
 
 
 # Task 6: Define a dictionary that reverses the maping in `token2int`
 #
 # Your code here:
 # -----------------------------------------------
-id_to_token = _ # Your code here
+id_to_token = {v: k for k, v in token_to_id.items()}
 
 # tests: 
 # test 1
@@ -141,6 +149,8 @@ assert id_to_token[token_to_id['dog']] == 'dog'
 assert token_to_id[id_to_token[4]] == 4
 # test 3
 assert all(id_to_token[token_to_id[key]]==key for key in token_to_id) and all(token_to_id[id_to_token[k]]==k for k in range(len(token_to_id)))
+
+print(id_to_token)
 # -----------------------------------------------
 
 
@@ -171,10 +181,19 @@ all(i2t[t2i[tok]] == tok for tok in t2i) # should be True
 #   and the id_to_token dictionaries.
 
 # Your code here:
-# -----------------------------------------------
-def tokenize_and_encode(documents: list) -> list:
-    # Hint: use your make_vocabulary_map and tokenize function
-    pass # Your code
+def make_vocabulary_map(documents: list) -> tuple:
+    # Step 1: Tokenize all documents and collect unique tokens
+    tokens = set()
+    for doc in documents:
+        # Use the tokenize function to process each document
+        tokens.update(["".join(char for char in word if char.isalnum()) for word in doc.lower().split()])
+    
+    # Step 2: Create token-to-int and int-to-token dictionaries
+    sorted_tokens = sorted(tokens)  # Sort for consistent ordering
+    token2int = {token: idx for idx, token in enumerate(sorted_tokens)}
+    int2token = {idx: token for token, idx in token2int.items()}
+    
+    return token2int, int2token
 
 # Test:
 enc, t2i, i2t = tokenize_and_encode([text, 'What a luck we had today!'])
@@ -200,7 +219,7 @@ enc, t2i, i2t = tokenize_and_encode([text, 'What a luck we had today!'])
 
 # Your code here:
 # -----------------------------------------------
-sigmoid = _ # Your code
+sigmoid = lambda x: 1 / (1 + np.exp(-x))
 
 # Test:
 np.all(sigmoid(np.log([1, 1/3, 1/7])) == np.array([1/2, 1/4, 1/8]))
