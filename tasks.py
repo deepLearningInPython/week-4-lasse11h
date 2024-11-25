@@ -221,7 +221,7 @@ enc, t2i, i2t = tokenize_and_encode([text, 'What a luck we had today!'])
 sigmoid = lambda x: 1 / (1 + np.exp(-x))
 
 # Test:
-np.all(sigmoid(np.log([1, 1/3, 1/7])) == np.array([1/2, 1/4, 1/8]))
+assert np.allclose(sigmoid(np.log([1, 1/3, 1/7])), np.array([1/2, 1/4, 1/8]), atol=1e-12)
 # -----------------------------------------------
 
 
@@ -292,9 +292,20 @@ np.all(sigmoid(np.log([1, 1/3, 1/7])) == np.array([1/2, 1/4, 1/8]))
 
 # Your code here:
 # -----------------------------------------------
-def rnn_layer(w: np.array, list_of_sequences: list[np.array], sigma=sigmoid ) -> np.array:
-    pass # Your code
+def rnn_layer(w: np.array, list_of_sequences: list[np.array], sigma=sigmoid) -> np.array:
+    # Split weights into W, U, B
+    W = w[:9].reshape(3, 3)
+    U = w[9:18].reshape(3, 3)
+    B = w[18:].reshape(1, 3)
 
+    outputs = []
+    for sequence in list_of_sequences:
+        a = np.zeros(sequence.shape[1])  # Initialize hidden state
+        for x_t in sequence:  # Process each time step
+            a = sigma(W @ x_t + U @ a)  # Update hidden state
+        outputs.append(B @ a)  # Final output for sequence
+
+    return np.array(outputs).flatten()  # Flatten outputs for consistency
 # Test
 np.random.seed(10)
 list_of_sequences = [np.random.normal(size=(5,3)) for _ in range(100)]
