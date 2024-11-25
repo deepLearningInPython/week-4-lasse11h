@@ -92,12 +92,16 @@ print(word_frequencies_filtered)  # Expected output: {'the': 2}
 # Your code here:
 
 def token_counts(string: str, k: int = 1) -> dict:
-    # Tokenize and count frequencies
+    # Tokenize the string into words
     tokens = tokenize(string)
-    freq = {word: tokens.count(word) for word in set(tokens)}
-    # Filter by frequency > k
+    # Convert tokens to a numpy array for efficient operations
+    tokens_array = np.array(tokens)
+    # Find unique tokens and their counts
+    unique_tokens, counts = np.unique(tokens_array, return_counts=True)
+    # Create a dictionary of tokens and their counts
+    freq = dict(zip(unique_tokens, counts))
+    # Filter tokens with counts greater than k
     return {word: count for word, count in freq.items() if count > k}
-
 
 # [C] Sets & Dictionary comprehension: Mapping unique tokens to numbers and vice versa
 #   Objective: Practice dictionary comprehensions and create mappings from tokens to unique 
