@@ -25,17 +25,16 @@ import numpy as np
 #   comprehension.
 
 # Your code here:
-# -----------------------------------------------
+# Task A: Tokenization using list comprehensions
 text = "The quick brown fox jumps over the lazy dog!"
 
-# Write a list comprehension to tokenize the text and remove punctuation
-tokens = _ # Your code here
+# Tokenize the text: split into words and remove punctuation
+tokens = [word.strip('.,!?') for word in text.split()]
+
+# Print the tokens
+print(tokens)
 
 # Expected output: ['The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
-print(tokens)
-# -----------------------------------------------
-
-
 
 
 # Task 2: Create a function that takes a string and breaks it up into tokens and removes any 
@@ -43,13 +42,13 @@ print(tokens)
 #   words in alphabetical order.
 
 # Your code here:
-# -----------------------------------------------
 def tokenize(string: str) -> list:
-    pass # Your code
-
-
-# -----------------------------------------------
-
+    # Convert string to lowercase and replace unwanted characters with spaces
+    clean_string = "".join(char if char.isalnum() or char.isspace() else " " for char in string.lower())
+    # Split the cleaned string into words
+    tokens = clean_string.split()
+    # Return sorted unique tokens
+    return sorted(set(tokens))
 
 
 # [B] Dictionary Comprehensions: Frequency Count of Tokens
